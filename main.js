@@ -1,13 +1,11 @@
 const puppeteer = require('puppeteer');
 
-
-
-(async () => {
-    const browser = await puppeteer.launch({    //launch puppeteer
+(async() => {
+    const browser = await puppeteer.launch({ //launch puppeteer
         headless: false,
         slowMo: 0,
     })
-    const page = await browser.newPage();       //open the browser
+    const page = await browser.newPage(); //open the browser
 
     await page.setViewport({ width: 1200, height: 720 });
 
@@ -20,73 +18,64 @@ const puppeteer = require('puppeteer');
     let myBoard = []
 
     let board = await page.$$('#board img')
-    // console.log(board.length)
+        // console.log(board.length)
     let i = 0
-    let row = ['0','0','0','0','0','0','0','0','0',]
-    for (const el of board) {
-        // let img = await el.$('img'); //Get the link to the product page
-        let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
-        console.log(url);
-        if (i == 8) {
-            myBoard = row;
-            i = 0
-        } else {
-            switch (url) {
-                case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb3///97e3uVBMaVAAAAHklEQVQI12MIDQ0NARFBDAEMDFzkEl6rVq1i0AISAIlSC03msuDYAAAAAElFTkSuQmCC":
-                    row[i] = "0"
-                    break;
-                case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AAP97e3u7pKrVAAAAJUlEQVQI12NYBQQMDQxAACUCgAQjiGAFEaIQLiYhGgojEHqBGAB4Gw2cMF3q+AAAAABJRU5ErkJggg==":
-                    row[i] = "1"
-                    break;       
-                case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AewB7e3vro336AAAANUlEQVQI12NYBQQMDQxAACFCQxkYGkNDHRgaA1gdgGJgIhQowRoCknUAygIZYCVgAqwNQQAA1rsQB7h1rwIAAAAASUVORK5CYII=":
-                    row[i] = "2"
-                    break;    
-                default:
-                    break;
+    let rowNb = 0
+    let row = []
+    while (true) {
+        for (const el of board) {
+            // let img = await el.$('img'); //Get the link to the product page
+            let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
+                // console.log(url);
+            if (i == 9) {
+                myBoard = [...myBoard, row];
+                i = 0
+                row = []
+            } else {
+                switch (url) {
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/AAAAAAB7e3v///9Ql2ugAAAANElEQVQI12NYBQQMDQxA0MDgACNcQxwYGkRDgaz4UAcI0RoaGsLQEApkAQmwLEQdQhvYFAAmDxJuxV7pRgAAAABJRU5ErkJggg==":
+                        row[i] = "X"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEW9vb0AAAB7e3v///9j2HHCAAAANElEQVQI12NYBQQMDQxA0MDgACNcQxwYGkRDgaz4UAcI0RoaGsLQEApkAQmwLEQdQhvYFAAmDxJuxV7pRgAAAABJRU5ErkJggg==":
+                        row[i] = "x"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEW9vb17e3tXxGy+AAAAEElEQVQI12P4/5+hgYF4BAAJYgl/JfpRmAAAAABJRU5ErkJggg==":
+                        row[i] = "0"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEW9vb3///97e3sAAAD/AABQHuKJAAAAOklEQVQI12MQhAABGIOJQZABDJRADBYHCIPFBcpwcUGIIKsB6zJAZxgbQxjGQIDEQFghoAQBDExQBgCHngoRLPdU8QAAAABJRU5ErkJggg==":
+                        row[i] = "F"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb3///97e3uVBMaVAAAAHklEQVQI12MIDQ0NARFBDAEMDFzkEl6rVq1i0AISAIlSC03msuDYAAAAAElFTkSuQmCC":
+                        row[i] = "O"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AAP97e3u7pKrVAAAAJUlEQVQI12NYBQQMDQxAACUCgAQjiGAFEaIQLiYhGgojEHqBGAB4Gw2cMF3q+AAAAABJRU5ErkJggg==":
+                        row[i] = "1"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AewB7e3vro336AAAANUlEQVQI12NYBQQMDQxAACFCQxkYGkNDHRgaA1gdgGJgIhQowRoCknUAygIZYCVgAqwNQQAA1rsQB7h1rwIAAAAASUVORK5CYII=":
+                        row[i] = "2"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb3/AAB7e3uBZQfoAAAAKUlEQVQI12NYBQQMDQxAACYaQ0PBhAOQywojWIFiIAIhBlICJiDaEAQAtlYPHU2zahQAAAAASUVORK5CYII=":
+                        row[i] = "3"
+                        break;
+                    case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AAHt7e3vZn4u5AAAAJklEQVQI12NYBQQMDQxAACFERWFECIxoDA11ABNAJUAuBsGARAAAgHoNeXfAhZYAAAAASUVORK5CYII=":
+                        row[i] = "4"
+                        break;
+                    default:
+                        break;
+                }
+                i++
             }
-            i++
         }
+        myBoard.forEach(row => {
+            console.log(JSON.stringify(row));
+        });
+        console.log("----------------------------------------------------");
+        myBoard = []
+        i = 0
+        row = []
+        sleep(8000)
     }
 
-    
-
-
-    // let res = 0;
-    // for (let index = 0; index < 20; index++) {
-    //     //On recupere la "valeur" 
-    //     var value = await page.$eval('html body center div.container h1.question', ele => ele.textContent);
-    //     //On prend la string et on la split au niveau des espaces = " "  Ex : "5 + 4" --->  ['5','+','4']
-    //     var listEntier = value.split(" ")
-    //     //On assigne la valeur de l'element 0 de listeEntier a entier1 
-    //     var entier1 = parseInt(listEntier[0])
-    //     //On assigne la valeur de l'element 2 de listeEntier a entier2, c'est le deuxieme vue qu'on a le plus a l'element 1
-    //     var entier2 = parseInt(listEntier[2])
-
-    //     //On ragrde quel type de calcul on doit faire 
-    //     switch (listEntier[1]) {
-    //         case "+":
-    //             res = entier1 + entier2
-    //             break;
-    //         case "-":
-    //             res = entier1 - entier2
-    //             break;
-    //         case "x":
-    //             res = entier1 * entier2
-    //             break;
-    //         case "/":
-    //             res = entier1 / entier2
-    //             break;
-    //     }
-
-    //     //Print le calcul avec le resultat
-    //     console.log(entier1 + " " + listEntier[1] + " " + entier2 + " = " + res);
-
-    //     //On ecrit le resultat dans la case de texte ayant l'ID #attempt
-    //     await page.type('#attempt', res.toString())
-    //     //On appuie sur la touche Entrer du clavier
-    //     await page.keyboard.press('Enter');
-    //     sleep(10)
-    // }
 
     // sleep(700)
     // //On cree un objet Date
@@ -102,7 +91,7 @@ const puppeteer = require('puppeteer');
  * 
  * @param milliseconds la duree d'attente
  */
-function sleep(milliseconds) {     
+function sleep(milliseconds) {
     const date = Date.now();
     let currentDate = null;
     do {
