@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
     let myBoard = []
 
     let board = await page.$$('#board img')
-        // console.log(board.length)
+
     let i = 0
     let rowNb = 0
     let row = []
@@ -66,28 +66,7 @@ const puppeteer = require('puppeteer');
             i++
         }
 
-        check_for_one(board)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        check_for_one(myBoard, board, page)
 
 
 
@@ -113,17 +92,69 @@ const puppeteer = require('puppeteer');
     // browser.close();
 })()
 
-function check_for_one(board) {
+function check_for_one(myBoard, board, page) {
     let nb = 0
-    for (let row of board) {
-        console.log(row)
-        for (const field of row) {
-            if (field === "1") {
-                nb++
+    let nbRows = Object.keys(myBoard).length
+    let coord = [0, 0]
+    let hidden
+    let i = 0
+    for (let nb_row in myBoard) {
+        for (let field of myBoard[nb_row]) {
+            coord = [nb_row, i]
+
+
+            switch (field) {
+                case "1":
+                    console.log(field);
+                    hidden = find_hidden(myBoard, coord)
+
+                    if (Object.keys(hidden).length == 1) {
+                        click_on(page, board, coord)
+                    }
+
+                    break;
+                case "2":
+                    break;
+                default:
+                    break;
+            }
+            i++
+        }
+    }
+}
+
+// 2 8
+// 1 2
+async function click_on(page, board, coord) {
+
+    let el = coord[0] * 9 + coord[1]
+
+    let i = 0
+    for (const field of board) {
+        if (i == el) {
+            try {
+                const preview_coordinates = await field.boundingBox()
+                await field.click({ button: 'left' });
+            } catch (error) {
+                console.log("Mouse hover error : " + error);
+            }
+        }
+        i++
+    }
+}
+
+function find_hidden(myBoard, coord) {
+    let newCoord = []
+    for (let x = -1; x < 2; x += 2) {
+        for (let y = -1; y < 2; y += 2) {
+            if (myBoard[coord[0] + x, [coord[1] + y]] == "F") {
+                return [coord[0] + x, coord[1] + y]
+            } else if (myBoard[coord[0 + x], [coord[1 + y]]] == ("0" || "O")) {
+                newCoord = [...newCoord, [coord[0] + x, coord[1] + y]]
             }
         }
     }
-    print(nb)
+    return newCoord;
 }
 
 /**
