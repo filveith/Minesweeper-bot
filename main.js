@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
     let myBoard = []
 
     let board = await page.$$('#board img')
-
+    console.log(board);
     let i = 0
     let rowNb = 0
     let row = []
@@ -70,7 +70,7 @@ const puppeteer = require('puppeteer');
 
 
 
-
+        // console.log(myBoard[1][1]);
 
         myBoard.forEach(row => {
             console.log(JSON.stringify(row));
@@ -99,17 +99,16 @@ function check_for_one(myBoard, board, page) {
     let hidden
     let i = 0
     for (let nb_row in myBoard) {
-        for (let field of myBoard[nb_row]) {
-            coord = [nb_row, i]
+        for (let field of myBoard[parseInt(nb_row)]) {
+            coord = [parseInt(nb_row), i]
 
 
             switch (field) {
                 case "1":
-                    console.log(field);
                     hidden = find_hidden(myBoard, coord)
 
                     if (Object.keys(hidden).length == 1) {
-                        click_on(page, board, coord)
+                        click_on(page, board, hidden)
                     }
 
                     break;
@@ -125,19 +124,24 @@ function check_for_one(myBoard, board, page) {
 
 // 2 8
 // 1 2
-async function click_on(page, board, coord) {
+async function click_on(page, board, coords) {
 
-    let el = coord[0] * 9 + coord[1]
 
     let i = 0
-    for (const field of board) {
-        if (i == el) {
+    for (const coord of coords) {
+        let tile_nb = coord[0] * 9 + coord[1]
+        console.log(tile_nb);
+        if (i == tile_nb) {
             try {
-                const preview_coordinates = await field.boundingBox()
+                // const preview_coordinates = await field.boundingBox()
                 await field.click({ button: 'left' });
+                await page.click('#board img #tile' + tile_nb)
+                console.log("Clickeed on tile " + tile_nb);
+
             } catch (error) {
-                console.log("Mouse hover error : " + error);
+                console.log("Mouse click error : " + error);
             }
+            i = 0
         }
         i++
     }
@@ -145,12 +149,23 @@ async function click_on(page, board, coord) {
 
 function find_hidden(myBoard, coord) {
     let newCoord = []
-    for (let x = -1; x < 2; x += 2) {
-        for (let y = -1; y < 2; y += 2) {
-            if (myBoard[coord[0] + x, [coord[1] + y]] == "F") {
-                return [coord[0] + x, coord[1] + y]
-            } else if (myBoard[coord[0 + x], [coord[1 + y]]] == ("0" || "O")) {
-                newCoord = [...newCoord, [coord[0] + x, coord[1] + y]]
+    for (let x = -1; x < 2; x++) {
+        for (let y = -1; y < 2; y++) {
+            if (coord[0]+x < 0 || coord[0]+y < 0 || myBoard[coord[0]+x][coord[1]+y] != undefined) {   
+                 
+                console.log("x: ", x, "  y: ", y, " coord: ", coord[0],coord[1], "  boardV: ", myBoard[coord[0]][coord[1]]);
+                console.log("x: ", x, "  y: ", y, " coord: ", coord[0] + x,coord[1] + y, "  boardV: ", myBoard[coord[0]+x][coord[1]+y]);
+                try {
+                    console.log("Coord : ",myBoard[coord[0] + x][coord[1] + y]);
+
+                    if (myBoard[coord[0] + x][coord[1] + y] == "F") {
+                        newCoord = [...newCoord, [coord[0] + x, coord[1] + y]]
+                    } else if (myBoard[coord[0] + x][coord[1] + y] == ("0" || "O")) {
+                        newCoord = [...newCoord, [coord[0] + x, coord[1] + y]]
+                    }
+                } catch (error) {
+                    console.log("Out of range");
+                }
             }
         }
     }
