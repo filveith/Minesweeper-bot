@@ -120,7 +120,7 @@ function check_tile(myBoard, board, page) {
 
             switch (field) {
                 case "1":
-                    hidden = find_hidden(myBoard, coord, 1, page)
+                    // hidden = find_hidden(myBoard, coord, 1, page)
 
                     // if (Object.keys(hidden).length == 1) {
                     //     click_on_all(page, board, hidden)
@@ -128,6 +128,8 @@ function check_tile(myBoard, board, page) {
 
                     break;
                 case "2":
+                    hidden = find_hidden(myBoard, coord, 2, page)
+
                     break;
                 default:
                     break;
