@@ -18,7 +18,9 @@ const puppeteer = require('puppeteer');
     let myBoard = []
 
     let board = await page.$$('#board img')
-    await page.click('#tile' + 1)
+    await page.click('#tile' + 1,{
+        button: 'right',
+      });
     
 
 
@@ -41,7 +43,10 @@ async function click_on(page, board, tile_coord){
         // const preview_coordinates = await field.boundingBox()
         // await field.click({ button: 'left' });
         console.log("Try Click on tile " + tile_nb);
-        await page.click('#board img #tile' + tile_nb)
+        await page.click('#tile' + tile_nb,{
+            button: 'right',
+          });
+        // await page.click('#tile' + tile_nb)
         console.log("Clicked on tile " + tile_nb);
 
     } catch (error) {
