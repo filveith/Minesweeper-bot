@@ -10,28 +10,26 @@ const puppeteer = require('puppeteer');
     await page.setViewport({ width: 1200, height: 720 });
 
     await page.goto('https://demineur.eu/');
-    sleep(2000)
+    sleep(1000)
 
     await page.click("#qc-cmp2-ui > div.qc-cmp2-footer.qc-cmp2-footer-overlay.qc-cmp2-footer-scrolled > div > button.css-k8o10q")
-    sleep(1000)
+    sleep(500)
 
     let myBoard = []
 
     let board = await page.$$('#board img')
-    // console.log(board);
+    console.log(board.length);
     let i = 0
     let rowNb = 0
     let row = []
     while (true) {
+        let t = 0
         for (const el of board) {
+            t++
             // let img = await el.$('img'); //Get the link to the product page
             let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
                 // console.log(url);
-            if (i == 9) {
-                myBoard = [...myBoard, row];
-                i = 0
-                row = []
-            }
+            
             switch (url) {
                 case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/AAAAAAB7e3v///9Ql2ugAAAANElEQVQI12NYBQQMDQxA0MDgACNcQxwYGkRDgaz4UAcI0RoaGsLQEApkAQmwLEQdQhvYFAAmDxJuxV7pRgAAAABJRU5ErkJggg==":
                     row[i] = "X"
@@ -70,11 +68,18 @@ const puppeteer = require('puppeteer');
                     break;
             }
             i++
+            if (i == 9) {
+                myBoard = [...myBoard, row];
+                i = 0
+                row = []
+            }
         }
 
-        myBoard.forEach(row => {
-            console.log(JSON.stringify(row));
-        });
+        console.log(t);
+
+        // myBoard.forEach(row => {
+        //     console.log(JSON.stringify(row));
+        // });
 
         check_tile(myBoard, board, page)
 
@@ -181,7 +186,7 @@ function find_hidden(myBoard, coord, type, page) {
             new_X = coord_X + x
             new_Y = coord_Y + y
             console.log(coord_X, coord_Y, new_X, coord_Y);
-            if (!(new_X < 0 || new_Y < 0 || new_X > 64 || new_Y > 64 || myBoard[new_X][new_Y])) {   
+            if (!(new_X < 0 || new_Y < 0 || new_X > 63 || new_Y > 63 || myBoard[new_X][new_Y] === undefined)) {   
                  
                 console.log("x: ", x, "  y: ", y, " old coord: ", coord_X,coord_Y, "  boardV: ", myBoard[coord_X][coord_Y]);
                 console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
