@@ -112,8 +112,8 @@ function check_tile(myBoard, board, page) {
     let nbRows = Object.keys(myBoard).length
     let coord = [0, 0]
     let hidden
-    let i = 0
     for (let nb_row in myBoard) {
+        let i = 0        
         for (let field of myBoard[parseInt(nb_row)]) {
             coord = [parseInt(nb_row), i]
 
@@ -122,9 +122,9 @@ function check_tile(myBoard, board, page) {
                 case "1":
                     hidden = find_hidden(myBoard, coord, 1, page)
 
-                    if (Object.keys(hidden).length == 1) {
-                        click_on_all(page, board, hidden)
-                    }
+                    // if (Object.keys(hidden).length == 1) {
+                    //     click_on_all(page, board, hidden)
+                    // }
 
                     break;
                 case "2":
@@ -162,12 +162,15 @@ async function click_on_all(page, board, coords) {
 }
 
 async function click_on(page, board, tile_coord){
+    console.log("click on ");
     let tile_nb = tile_coord[0] * 9 + tile_coord[1]
-    console.log(tile_nb);
+    console.log("click on tilenb: ",tile_nb);
+    console.log('#tile' + tile_nb);
     try {
         // const preview_coordinates = await field.boundingBox()
         // await field.click({ button: 'left' });
-        await page.click('#board img #tile' + tile_nb)
+        console.log("Try Click on tile " + tile_nb);
+        await page.click('#tile' + tile_nb)
         console.log("Clicked on tile " + tile_nb);
 
     } catch (error) {
@@ -177,6 +180,7 @@ async function click_on(page, board, tile_coord){
 
 function find_hidden(myBoard, coord, type, page) {
     let newCoord = []
+    console.log(coord);
     let coord_X = coord[0]
     let coord_Y = coord[1]
     let new_X, new_Y
@@ -185,14 +189,14 @@ function find_hidden(myBoard, coord, type, page) {
         for (let y = -1; y < 2; y++) {
             new_X = coord_X + x
             new_Y = coord_Y + y
-            console.log(coord_X, coord_Y, new_X, coord_Y);
-            if (!(new_X < 0 || new_Y < 0 || new_X > 63 || new_Y > 63 || myBoard[new_X][new_Y] === undefined)) {   
+            // console.log(coord_X, coord_Y, new_X, coord_Y);
+            if (!(new_X < 0 || new_Y < 0 || new_X > 8 || new_Y > 8 || myBoard[new_X][new_Y] === undefined)) {   
                  
-                console.log("x: ", x, "  y: ", y, " old coord: ", coord_X,coord_Y, "  boardV: ", myBoard[coord_X][coord_Y]);
-                console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
-                console.log("nb flags: ", nb_flags);
+                // console.log("x: ", x, "  y: ", y, " old coord: ", coord_X,coord_Y, "  boardV: ", myBoard[coord_X][coord_Y]);
+                // console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
                 try {
                     if (myBoard[new_X][new_Y] == "F") {
+                        console.log("FOUND FLAG AT ",new_X, new_Y, myBoard[new_X][new_Y]);
                         nb_flags++
                         newCoord = [...newCoord, [new_X, new_Y]]
                     } else if (myBoard[new_X][new_Y] == ("0" || "O")) {
@@ -202,8 +206,11 @@ function find_hidden(myBoard, coord, type, page) {
                     console.log("Out of range");
                 }
             }
+            console.log("nb flags: ", nb_flags);
+
             if (nb_flags == type) {
                 click_on(page, myBoard, coord)
+                return -1
             }
         }
     }
