@@ -18,14 +18,13 @@ const puppeteer = require('puppeteer');
     let myBoard = []
 
     let board = await page.$$('#board img')
-    console.log(board.length);
     let i = 0
     let rowNb = 0
     let row = []
     while (true) {
-        let t = 0
+
+        // Get the urls of all the images
         for (const el of board) {
-            t++
             // let img = await el.$('img'); //Get the link to the product page
             let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
                 // console.log(url);
@@ -40,26 +39,18 @@ const puppeteer = require('puppeteer');
             }
         }
 
-        console.log(t);
-
-        // myBoard.forEach(row => {
-        //     console.log(JSON.stringify(row));
-        // });
-
-        check_tile(myBoard, board, page)
-
-
-
-        // console.log(myBoard[1][1]);
+        check_tile(myBoard, page)
 
         myBoard.forEach(row => {
             console.log(JSON.stringify(row));
         });
+
         console.log("----------------------------------------------------");
         myBoard = []
         i = 0
         row = []
-        sleep(2000)
+
+        sleep(1000)
     }
 
 
@@ -116,16 +107,16 @@ function get_tile_type(url){
     }
 }
 
-function check_tile(myBoard, board, page) {
+function check_tile(myBoard, page) {
     let nb = 0
     let nbRows = Object.keys(myBoard).length
     let coord = [0, 0]
     let hidden
+
     for (let nb_row in myBoard) {
-        let i = 0        
+        let i = 0
         for (let field of myBoard[parseInt(nb_row)]) {
             coord = [parseInt(nb_row), i]
-
 
             switch (field) {
                 case "1":
@@ -189,25 +180,25 @@ async function click_on_all(page, board, coords) {
  * @param {puppeteer.page} page 
  * @param {[x,y]} tile_coord the coordinates of the tile to click on
  */
-async function click_on(page, tile_coord){
+function click_on(page, tile_coord){
     let tile_nb = tile_coord[0] * 9 + tile_coord[1]
     // console.log("click on tilenb: ",tile_nb);
     try {
-        await page.click('#tile' + tile_nb)
+        page.click('#tile' + tile_nb)
         console.log("Clicked on tile " + tile_nb);
     } catch (error) {
         console.log("Mouse click error on tile : "+tile_nb+" \n err : " + error);
     }
 }
 
-async function add_flags(page, board, hidden_tiles){
+function add_flags(page, board, hidden_tiles){
     // console.log("click on tilenb: ",tile_nb);
     hidden_tiles.forEach(tile_coord => { 
         let tile_nb = tile_coord[0] * 9 + tile_coord[1]
         // let tile = get_tile_type(await page.$('#tile'+tile_nb))
         try {
             if (board[tile_coord[0]][tile_coord[1]] == "O") {
-                console.log("Try RIGHT click on tile "+tile_nb);
+                // console.log("Try RIGHT click on tile "+tile_nb);
                 page.click('#tile' + tile_nb,{ button: 'right' });
                 console.log("RIGHT Clicked on tile " + tile_nb);
             }
@@ -240,7 +231,7 @@ function find_hidden(myBoard, coord, type, page) {
                 // console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
                 try {
                     if (myBoard[new_X][new_Y] == "F") {
-                        console.log("FOUND FLAG AT ",new_X, new_Y, myBoard[new_X][new_Y]);
+                        // console.log("FOUND FLAG AT ",new_X, new_Y, myBoard[new_X][new_Y]);
                         nb_flags++
                         newCoord = [...newCoord, [new_X, new_Y]]
                     } else if (myBoard[new_X][new_Y] == ("O" || "?")) {
@@ -261,7 +252,7 @@ function find_hidden(myBoard, coord, type, page) {
             }
         }   
     }
-    console.log("nb hidden : ",nb_hidden);
+    // console.log("nb hidden : ",nb_hidden);
     if (nb_hidden == type) {
         add_flags(page, myBoard, hidden)
         return -1
