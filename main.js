@@ -190,6 +190,8 @@ function click_on(page, tile_coord){
             page.click('#tile' + tile_nb)
             console.log("Clicked on tile " + tile_nb);
             tiles_clicked = [...tiles_clicked,tile_nb]
+        } else {
+            console.log("Already clicked ", tile_nb);
         }
     } catch (error) {
         console.log("Mouse click error on tile : "+tile_nb+" \n err : " + error);
