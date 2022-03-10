@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 
+let tiles_clicked = [];
+
 (async() => {
     const browser = await puppeteer.launch({ //launch puppeteer
         headless: false,
@@ -184,8 +186,11 @@ function click_on(page, tile_coord){
     let tile_nb = tile_coord[0] * 9 + tile_coord[1]
     // console.log("click on tilenb: ",tile_nb);
     try {
-        page.click('#tile' + tile_nb)
-        console.log("Clicked on tile " + tile_nb);
+        if (!tiles_clicked.includes(tile_nb)) {   
+            page.click('#tile' + tile_nb)
+            console.log("Clicked on tile " + tile_nb);
+            tiles_clicked = [...tiles_clicked,tile_nb]
+        }
     } catch (error) {
         console.log("Mouse click error on tile : "+tile_nb+" \n err : " + error);
     }
@@ -212,7 +217,7 @@ function add_flags(page, board, hidden_tiles){
 function find_hidden(myBoard, coord, type, page) {
     let newCoord = []
     let hidden = []
-    console.log(coord);
+    // console.log(coord);
     let coord_X = coord[0]
     let coord_Y = coord[1]
     let new_X, new_Y
@@ -230,11 +235,11 @@ function find_hidden(myBoard, coord, type, page) {
                 // console.log("x: ", x, "  y: ", y, " old coord: ", coord_X,coord_Y, "  boardV: ", myBoard[coord_X][coord_Y]);
                 // console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
                 try {
-                    if (myBoard[new_X][new_Y] == "F") {
+                    if (myBoard[new_X][new_Y] == ("F" || "?")) {
                         // console.log("FOUND FLAG AT ",new_X, new_Y, myBoard[new_X][new_Y]);
                         nb_flags++
                         newCoord = [...newCoord, [new_X, new_Y]]
-                    } else if (myBoard[new_X][new_Y] == ("O" || "?")) {
+                    } else if (myBoard[new_X][new_Y] == ("O")) {
                         hidden = [...hidden, [new_X, new_Y]]
                         nb_hidden++
                     } else if (myBoard[new_X][new_Y] == "0") {
@@ -253,7 +258,7 @@ function find_hidden(myBoard, coord, type, page) {
         }   
     }
     // console.log("nb hidden : ",nb_hidden);
-    if (nb_hidden == type) {
+    if (nb_hidden == type && nb_flags != type) {
         add_flags(page, myBoard, hidden)
         return -1
     }
