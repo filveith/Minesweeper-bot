@@ -39,7 +39,11 @@ const puppeteer = require('puppeteer');
             }
         }
 
-        check_tile(myBoard, page)
+        
+        let tiles = get_tiles(myBoard)
+        // console.log(tiles);
+        let click = check_tiles(myBoard, tiles)
+
 
         myBoard.forEach(row => {
             console.log(JSON.stringify(row));
@@ -79,6 +83,7 @@ function get_tile_type(url){
             break;
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEW9vb3///97e3sAAACeVBdNAAAAMklEQVQI12MIDQ0NARFBDAEMDFwMAfwfgISNDYxgABMgMeYDEAKkDoPrtWrVKgYtIAEAf3YRdAzsd6QAAAAASUVORK5CYII=":
             return "?"
+            break;
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb3///97e3uVBMaVAAAAHklEQVQI12MIDQ0NARFBDAEMDFzkEl6rVq1i0AISAIlSC03msuDYAAAAAElFTkSuQmCC":
             return "O"
             break;
@@ -107,11 +112,13 @@ function get_tile_type(url){
     }
 }
 
-function check_tile(myBoard, page) {
+function get_tiles(myBoard) {
     let nb = 0
     let nbRows = Object.keys(myBoard).length
     let coord = [0, 0]
-    let hidden
+
+    let one = two = three = four = five = six = seven = height = flags = hidden = []
+
 
     for (let nb_row in myBoard) {
         let i = 0
@@ -120,7 +127,8 @@ function check_tile(myBoard, page) {
 
             switch (field) {
                 case "1":
-                    hidden = find_hidden(myBoard, coord, 1, page)
+                    // one = find_hidden(myBoard, coord, 1, page)
+                    one = [...one, coord] 
 
                     // if (Object.keys(hidden).length >= 1) {
                     //     click_on_all(page, board, hidden)
@@ -129,18 +137,37 @@ function check_tile(myBoard, page) {
                     break;
                 case "2":
                     // hidden = find_hidden(myBoard, coord, 2, page)
+                    two = [...two, coord]
                     break;
                 case "3":
                     // hidden = find_hidden(myBoard, coord, 3, page)
+                    three = [...three, coord]
                     break;
                 case "4":
                     // hidden = find_hidden(myBoard, coord, 4, page)
+                    four = [...four, coord]
                     break;
                 case "5":
                     // hidden = find_hidden(myBoard, coord, 5, page)
+                    five = [...five, coord]
                     break;
                 case "6":
+                    six = [...six, coord]
                     // hidden = find_hidden(myBoard, coord, 6, page)
+                    break;
+                case "7":
+                    seven = [...seven, coord]
+                    // hidden = find_hidden(myBoard, coord, 6, page)
+                    break;
+                case "8":
+                    height = [...height, coord]
+                    // hidden = find_hidden(myBoard, coord, 6, page)
+                    break;
+                case "F":
+                    flags = [...flags, coord]
+                    break;
+                case "O":
+                    hidden = [...hidden, coord]
                     break;
                 default:
                     break;
@@ -148,10 +175,44 @@ function check_tile(myBoard, page) {
             i++
         }
     }
+    return [one, two, three, four, five, six, seven, height, flags, hidden]
 }
 
-// 2 8
-// 1 2
+function check_tiles(board, tiles) {
+    let left_clicks = right_clicks = []
+    
+    tiles.forEach((tile_cat, i) => {
+        i++
+        if (i <= 8) {
+            tile_cat.forEach(tile => {
+                console.log(tile, i);
+                // The type is the tile value [1...8]
+                let tile_type = i
+                // Tile number in the page [1,2] = tile nb 11
+                let tile_number = tile[0] * 9 + tile [1]
+                
+                
+
+
+
+
+            });
+        }
+    });
+
+    return [left_clicks, right_clicks]
+}
+
+function get_neighbors(tile_list, tile){
+    let left_clicks = right_clicks = []
+    
+    if (tiles) {
+        
+    }
+
+    return 
+}
+
 async function click_on_all(page, board, coords) {
 
     let i = 0
@@ -199,7 +260,7 @@ function add_flags(page, board, hidden_tiles){
         try {
             if (board[tile_coord[0]][tile_coord[1]] == "O") {
                 // console.log("Try RIGHT click on tile "+tile_nb);
-                page.click('#tile' + tile_nb,{ button: 'right' });
+                page.click('#tile' + tile_nb,{ button: 'right', delay: 100 });
                 console.log("RIGHT Clicked on tile " + tile_nb);
             }
         } catch (error) {
@@ -212,7 +273,7 @@ function add_flags(page, board, hidden_tiles){
 function find_hidden(myBoard, coord, type, page) {
     let newCoord = []
     let hidden = []
-    console.log(coord);
+    // console.log(coord);
     let coord_X = coord[0]
     let coord_Y = coord[1]
     let new_X, new_Y
@@ -254,7 +315,9 @@ function find_hidden(myBoard, coord, type, page) {
     }
     // console.log("nb hidden : ",nb_hidden);
     if (nb_hidden == type) {
+        
         add_flags(page, myBoard, hidden)
+        
         return -1
     }
     return newCoord;
