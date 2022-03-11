@@ -2,6 +2,17 @@ const puppeteer = require('puppeteer');
 
 let tiles_clicked = [];
 
+const ONE = 0, 
+    TWO = 1, 
+    THREE = 2, 
+    FOUR = 3, 
+    FIVE = 4, 
+    SIX = 5, 
+    SEVEN = 6, 
+    EIGHT = 7, 
+    FLAGS = 8, 
+    HIDDEN = 9;
+
 (async() => {
     const browser = await puppeteer.launch({ //launch puppeteer
         headless: false,
@@ -16,9 +27,11 @@ let tiles_clicked = [];
 
     await page.click("#qc-cmp2-ui > div.qc-cmp2-footer.qc-cmp2-footer-overlay.qc-cmp2-footer-scrolled > div > button.css-k8o10q")
     sleep(500)
+    // await page.click('#tile32')
 
     let myBoard = []
 
+    // sleep(100)
     let board = await page.$$('#board img')
     let i = 0
     let rowNb = 0
@@ -45,7 +58,8 @@ let tiles_clicked = [];
         let tiles = get_tiles(myBoard)
         // console.log(tiles);
         let click = check_tiles(myBoard, tiles)
-
+        console.log("left : ",click[0]);
+        console.log("right : ",click[1]);
 
         myBoard.forEach(row => {
             console.log(JSON.stringify(row));
@@ -181,8 +195,10 @@ function get_tiles(myBoard) {
 }
 
 function check_tiles(board, tiles) {
-    let left_clicks = right_clicks = []
-    
+    let clicks = []
+    let left_click = [],
+        right_clicks = []
+
     tiles.forEach((tile_cat, i) => {
         i++
         if (i <= 8) {
@@ -192,27 +208,60 @@ function check_tiles(board, tiles) {
                 let tile_type = i
                 // Tile number in the page [1,2] = tile nb 11
                 let tile_number = tile[0] * 9 + tile [1]
-                
-                
 
-
-
-
+                clicks = get_neighbors(tiles, i, tile)
+                left_click = [...left_click, ...clicks[0]]
+                right_clicks = [...right_clicks, ...clicks[1]]
             });
         }
     });
 
-    return [left_clicks, right_clicks]
+    // Click[0] are the left click and clicks[1] the right clicks
+    return [left_click, right_clicks]
 }
 
-function get_neighbors(tile_list, tile){
-    let left_clicks = right_clicks = []
-    
-    if (tiles) {
-        
-    }
+function get_neighbors(tiles, tile_type, tile){
+    // Only one left click possible per case but mutliple right clicks
+    let left_click = right_clicks = [];
+    let X = tile[0], Y = tile[1];
+    let newX, newY
+    let nb_flags = 0
+    let nb_hidden = 0
+    let hidden = []
 
-    return 
+    for (let x = -1; x < 2; x++) {
+        for (let y = -1; y < 2; y++) {
+            // console.log(x,y);
+            newX = x + X
+            newY = y + Y
+            try {
+                // console.log("neighbors", tiles[FLAGS], [X, Y], tile_type, [newX, newY]);
+                
+                if (tiles[FLAGS].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check if a neighbor is a flag
+                    console.log("FLAGS at ", [newX, newY], " for tile : ", tile);
+                    nb_flags++
+                    if (nb_flags == tile_type && left_click != undefined) {
+                        left_click = [tile]
+                    }
+                } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined){ // Check the number of hidden tiles
+                    console.log("HIDDEN at ", [newX, newY], " for tile : ", tile);
+                    nb_hidden++
+                    hidden = [...hidden, [newX, newY]] 
+                }
+            } catch (error) {
+                console.log("Out of range");
+            }
+        }
+    }
+    if (nb_hidden == tile_type) { // Check if the nb of hidden tiles is the same as the tile type (If yes it means that we can put a flag on all the hidden tiles)
+        right_clicks = [...hidden]
+        console.log("-----------------------------------");
+        console.log(right_clicks);
+        console.log("-----------------------------------");
+        // left_click = [tile] // Add the current tile to the left clicks beacause if we add flags to all the hidden tiles we can click on it 
+    }
+    // console.log(left_click, right_clicks);
+    return [left_click, right_clicks]
 }
 
 async function click_on_all(page, board, coords) {
