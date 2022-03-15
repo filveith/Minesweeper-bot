@@ -65,7 +65,7 @@ const ONE = 0,
         
         for (let i = 0; i < richt_clicks.length; i++) {
             try {
-                let tileNb = richt_clicks[0] * 9 + richt_clicks[1]
+                let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
                 await page.click('#tile'+tileNb, { button: 'right', delay: 100 })
             } catch (error) {
                 console.log("Error on mouse click");
@@ -222,14 +222,47 @@ function check_tiles(board, tiles) {
                 let tile_number = tile[0] * 9 + tile [1]
 
                 clicks = get_neighbors(tiles, i, tile)
-                left_click = [...left_click, ...clicks[0]]
-                right_clicks = [...right_clicks, ...clicks[1]]
+                
+                console.log("Before");
+                left_click = array_contains(left_click, clicks[0])
+                right_clicks = array_contains(right_clicks, clicks[1])
+                console.log("After");
+                // left_click = [...left_click, ...clicks[0]]
+                // right_clicks = [...right_clicks, ...clicks[1]]
             });
         }
     });
 
     // Click[0] are the left click and clicks[1] the right clicks
     return [left_click, right_clicks]
+}
+
+/**
+ * Check if an array contains values from another array
+ * And add the values to the array if they don't exist
+ * 
+ * @param {array} array 
+ * @param {array} values 
+ * @returns 
+ */
+function array_contains(array, values){
+    console.log(array);
+    if (array == []) {
+        console.log("empty");
+    }
+    // if (array != []) {   
+    //     console.log("array");
+    //     values.forEach(val => {
+    //         console.log("val: ",val);
+    //         array.forEach(element => {
+    //             console.log("el: ",element, " val: ", val);
+    //             if (!(element[0] == val[0] && element[1] == val[1])) {
+    //                 array = [...array, values]
+    //             }
+    //         });
+    //     });
+    // }
+    return array
 }
 
 function get_neighbors(tiles, tile_type, tile){
