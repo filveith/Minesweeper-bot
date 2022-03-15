@@ -61,6 +61,18 @@ const ONE = 0,
         console.log("left : ",click[0]);
         console.log("right : ",click[1]);
 
+        let richt_clicks = click[1]
+        
+        for (let i = 0; i < richt_clicks.length; i++) {
+            try {
+                let tileNb = richt_clicks[0] * 9 + richt_clicks[1]
+                await page.click('#tile'+tileNb, { button: 'right', delay: 100 })
+            } catch (error) {
+                console.log("Error on mouse click");
+            }
+        }
+
+
         myBoard.forEach(row => {
             console.log(JSON.stringify(row));
         });
