@@ -63,14 +63,14 @@ const ONE = 0,
 
         let richt_clicks = click[1]
 
-        // for (let i = 0; i < richt_clicks.length; i++) {
-        //     try {
-        //         let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
-        //         await page.click('#tile'+tileNb, { button: 'right', delay: 100 })
-        //     } catch (error) {
-        //         console.log("Error on mouse click");
-        //     }
-        // }
+        for (let i = 0; i < richt_clicks.length; i++) {
+            try {
+                let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
+                await page.click('#tile' + tileNb, { button: 'right', delay: 100 })
+            } catch (error) {
+                console.log("Error on mouse click");
+            }
+        }
 
 
         myBoard.forEach(row => {
@@ -219,12 +219,13 @@ function check_tiles(board, tiles) {
 
                 clicks = get_neighbors(tiles, i, tile)
 
-                console.log("Before");
                 console.log("LEFT -------------------------------");
                 left_click = array_contains(left_click, clicks[0])
+                console.log("-------------------------------");
                 console.log("RIGHT -------------------------------");
                 right_clicks = array_contains(right_clicks, clicks[1])
-                console.log("After");
+                console.log("-------------------------------");
+
                 // left_click = [...left_click, ...clicks[0]]
                 // right_clicks = [...right_clicks, ...clicks[1]]
             });
@@ -246,30 +247,45 @@ function check_tiles(board, tiles) {
  * @returns An array of arrays.
  */
 function array_contains(array, values) {
-    console.log(array);
-    // if (array == []) {
-    //     console.log("empty");
-    // }
+    console.log("ARRAY : ", array);
+    console.log("VALUES : ", values);
     let stop = 0
+    let add = false
+    let duplicate = false
+    let newValues = []
     if (array.length !== 0) {
-        values.every(val => {
-            array.every(element => {
-                element.every(el => {
-                    console.log("el: ", el, " val: ", val);
-                    if (!(el[0] == val[0] && el[1] == val[1])) {
-                        console.log("add ", el[0], el[1], val[0], val[1]);
-                        array = [...array, val]
-                        stop = 1
-                        return false
+        values.forEach(val => {
+            array.forEach(element => {
+                // element.every(el => {
+                console.log("el: ", element, " val: ", val);
+                if (element[0] != undefined) {
+                    if (!(element[0] == val[0] && element[1] == val[1])) {
+
+                        console.log("add ", val);
+                        add = true
+
+                    } else {
+                        duplicate = true
                     }
-                })
-                if (stop === 1) {
-                    stop = 0
-                    return false
+                } else {
+                    console.log("element undefined : ", val);
+                    array = [val]
                 }
             });
+            if (add && !duplicate) {
+                console.log("addReal : ", val);
+                array = [...array, val]
+                console.log("added : ", array);
+
+                duplicate = false
+
+                add = false
+            }
         });
+
     } else {
+        console.log("Array empty values :", values);
+
         array = [...values]
     }
     return array
