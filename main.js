@@ -2,15 +2,15 @@ const puppeteer = require('puppeteer');
 
 let tiles_clicked = [];
 
-const ONE = 0, 
-    TWO = 1, 
-    THREE = 2, 
-    FOUR = 3, 
-    FIVE = 4, 
-    SIX = 5, 
-    SEVEN = 6, 
-    EIGHT = 7, 
-    FLAGS = 8, 
+const ONE = 0,
+    TWO = 1,
+    THREE = 2,
+    FOUR = 3,
+    FIVE = 4,
+    SIX = 5,
+    SEVEN = 6,
+    EIGHT = 7,
+    FLAGS = 8,
     HIDDEN = 9;
 
 (async() => {
@@ -27,7 +27,7 @@ const ONE = 0,
 
     await page.click("#qc-cmp2-ui > div.qc-cmp2-footer.qc-cmp2-footer-overlay.qc-cmp2-footer-scrolled > div > button.css-k8o10q")
     sleep(500)
-    // await page.click('#tile32')
+        // await page.click('#tile32')
 
     let myBoard = []
 
@@ -43,9 +43,9 @@ const ONE = 0,
             // let img = await el.$('img'); //Get the link to the product page
             let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
                 // console.log(url);
-            
+
             row[i] = get_tile_type(url)
-            
+
             i++
             if (i == 9) {
                 myBoard = [...myBoard, row];
@@ -54,23 +54,23 @@ const ONE = 0,
             }
         }
 
-        
+
         let tiles = get_tiles(myBoard)
-        // console.log(tiles);
+
         let click = check_tiles(myBoard, tiles)
-        console.log("left : ",click[0]);
-        console.log("right : ",click[1]);
+        console.log("left : ", click[0]);
+        console.log("right : ", click[1]);
 
         let richt_clicks = click[1]
-        
-        for (let i = 0; i < richt_clicks.length; i++) {
-            try {
-                let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
-                await page.click('#tile'+tileNb, { button: 'right', delay: 100 })
-            } catch (error) {
-                console.log("Error on mouse click");
-            }
-        }
+
+        // for (let i = 0; i < richt_clicks.length; i++) {
+        //     try {
+        //         let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
+        //         await page.click('#tile'+tileNb, { button: 'right', delay: 100 })
+        //     } catch (error) {
+        //         console.log("Error on mouse click");
+        //     }
+        // }
 
 
         myBoard.forEach(row => {
@@ -95,7 +95,11 @@ const ONE = 0,
     // browser.close();
 })()
 
-function get_tile_type(url){
+/**
+ * Given a URL, return the tile type
+ * @returns The tile type.
+ */
+function get_tile_type(url) {
     switch (url) {
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/AAAAAAB7e3v///9Ql2ugAAAANElEQVQI12NYBQQMDQxA0MDgACNcQxwYGkRDgaz4UAcI0RoaGsLQEApkAQmwLEQdQhvYFAAmDxJuxV7pRgAAAABJRU5ErkJggg==":
             return "X"
@@ -140,6 +144,11 @@ function get_tile_type(url){
     }
 }
 
+/**
+ * Given a board, it returns a list of lists of coordinates
+ * @returns an array of arrays. Each array contains the coordinates of the tiles of the corresponding
+ * type.
+ */
 function get_tiles(myBoard) {
     let nb = 0
     let nbRows = Object.keys(myBoard).length
@@ -155,41 +164,28 @@ function get_tiles(myBoard) {
 
             switch (field) {
                 case "1":
-                    // one = find_hidden(myBoard, coord, 1, page)
-                    one = [...one, coord] 
-
-                    // if (Object.keys(hidden).length >= 1) {
-                    //     click_on_all(page, board, hidden)
-                    // }
-
+                    one = [...one, coord]
                     break;
                 case "2":
-                    // hidden = find_hidden(myBoard, coord, 2, page)
                     two = [...two, coord]
                     break;
                 case "3":
-                    // hidden = find_hidden(myBoard, coord, 3, page)
                     three = [...three, coord]
                     break;
                 case "4":
-                    // hidden = find_hidden(myBoard, coord, 4, page)
                     four = [...four, coord]
                     break;
                 case "5":
-                    // hidden = find_hidden(myBoard, coord, 5, page)
                     five = [...five, coord]
                     break;
                 case "6":
                     six = [...six, coord]
-                    // hidden = find_hidden(myBoard, coord, 6, page)
                     break;
                 case "7":
                     seven = [...seven, coord]
-                    // hidden = find_hidden(myBoard, coord, 6, page)
                     break;
                 case "8":
                     height = [...height, coord]
-                    // hidden = find_hidden(myBoard, coord, 6, page)
                     break;
                 case "F":
                     flags = [...flags, coord]
@@ -218,13 +214,15 @@ function check_tiles(board, tiles) {
                 console.log(tile, i);
                 // The type is the tile value [1...8]
                 let tile_type = i
-                // Tile number in the page [1,2] = tile nb 11
-                let tile_number = tile[0] * 9 + tile [1]
+                    // Tile number in the page [1,2] = tile nb 11
+                let tile_number = tile[0] * 9 + tile[1]
 
                 clicks = get_neighbors(tiles, i, tile)
-                
+
                 console.log("Before");
+                console.log("LEFT -------------------------------");
                 left_click = array_contains(left_click, clicks[0])
+                console.log("RIGHT -------------------------------");
                 right_clicks = array_contains(right_clicks, clicks[1])
                 console.log("After");
                 // left_click = [...left_click, ...clicks[0]]
@@ -237,38 +235,56 @@ function check_tiles(board, tiles) {
     return [left_click, right_clicks]
 }
 
+
 /**
- * Check if an array contains values from another array
- * And add the values to the array if they don't exist
+ * Given an array of arrays, return a new array of arrays that contains all the values from the
+ * original array, 
+ * but with no duplicates
  * 
  * @param {array} array 
  * @param {array} values 
- * @returns 
+ * @returns An array of arrays.
  */
-function array_contains(array, values){
+function array_contains(array, values) {
     console.log(array);
-    if (array == []) {
-        console.log("empty");
-    }
-    // if (array != []) {   
-    //     console.log("array");
-    //     values.forEach(val => {
-    //         console.log("val: ",val);
-    //         array.forEach(element => {
-    //             console.log("el: ",element, " val: ", val);
-    //             if (!(element[0] == val[0] && element[1] == val[1])) {
-    //                 array = [...array, values]
-    //             }
-    //         });
-    //     });
+    // if (array == []) {
+    //     console.log("empty");
     // }
+    let stop = 0
+    if (array.length !== 0) {
+        values.every(val => {
+            array.every(element => {
+                element.every(el => {
+                    console.log("el: ", el, " val: ", val);
+                    if (!(el[0] == val[0] && el[1] == val[1])) {
+                        console.log("add ", el[0], el[1], val[0], val[1]);
+                        array = [...array, val]
+                        stop = 1
+                        return false
+                    }
+                })
+                if (stop === 1) {
+                    stop = 0
+                    return false
+                }
+            });
+        });
+    } else {
+        array = [...values]
+    }
     return array
 }
 
-function get_neighbors(tiles, tile_type, tile){
+/**
+ * Given a tile, return the tiles that can be clicked on or flagged
+ * @returns an array containing two arrays. The first array contains the tiles that can be left clicked
+ * and the second array contains the tiles that can be right clicked.
+ */
+function get_neighbors(tiles, tile_type, tile) {
     // Only one left click possible per case but mutliple right clicks
     let left_click = right_clicks = [];
-    let X = tile[0], Y = tile[1];
+    let X = tile[0],
+        Y = tile[1];
     let newX, newY
     let nb_flags = 0
     let nb_hidden = 0
@@ -281,17 +297,17 @@ function get_neighbors(tiles, tile_type, tile){
             newY = y + Y
             try {
                 // console.log("neighbors", tiles[FLAGS], [X, Y], tile_type, [newX, newY]);
-                
+
                 if (tiles[FLAGS].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check if a neighbor is a flag
-                    console.log("FLAGS at ", [newX, newY], " for tile : ", tile);
+                    // console.log("FLAGS at ", [newX, newY], " for tile : ", tile);
                     nb_flags++
                     if (nb_flags == tile_type && left_click != undefined) {
                         left_click = [tile]
                     }
-                } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined){ // Check the number of hidden tiles
-                    console.log("HIDDEN at ", [newX, newY], " for tile : ", tile);
+                } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check the number of hidden tiles
+                    // console.log("HIDDEN at ", [newX, newY], " for tile : ", tile);
                     nb_hidden++
-                    hidden = [...hidden, [newX, newY]] 
+                    hidden = [...hidden, [newX, newY]]
                 }
             } catch (error) {
                 console.log("Out of range");
@@ -300,10 +316,10 @@ function get_neighbors(tiles, tile_type, tile){
     }
     if (nb_hidden == tile_type) { // Check if the nb of hidden tiles is the same as the tile type (If yes it means that we can put a flag on all the hidden tiles)
         right_clicks = [...hidden]
-        console.log("-----------------------------------");
-        console.log(right_clicks);
-        console.log("-----------------------------------");
-        // left_click = [tile] // Add the current tile to the left clicks beacause if we add flags to all the hidden tiles we can click on it 
+            // console.log("-----------------------------------");
+            // console.log(right_clicks);
+            // console.log("-----------------------------------");
+            // left_click = [tile] // Add the current tile to the left clicks beacause if we add flags to all the hidden tiles so we can click on it 
     }
     // console.log(left_click, right_clicks);
     return [left_click, right_clicks]
@@ -331,50 +347,57 @@ async function click_on_all(page, board, coords) {
     }
 }
 
+
 /**
- * Click on a certain tile in the board
+ * Click on the tile with the given coordinates
  * 
  * @param {puppeteer.page} page 
  * @param {[x,y]} tile_coord the coordinates of the tile to click on
  */
-function click_on(page, tile_coord){
+function click_on(page, tile_coord) {
     let tile_nb = tile_coord[0] * 9 + tile_coord[1]
-    // console.log("click on tilenb: ",tile_nb);
+        // console.log("click on tilenb: ",tile_nb);
     try {
-        if (!tiles_clicked.includes(tile_nb)) {   
+        if (!tiles_clicked.includes(tile_nb)) {
             page.click('#tile' + tile_nb)
             console.log("Clicked on tile " + tile_nb);
-            tiles_clicked = [...tiles_clicked,tile_nb]
+            tiles_clicked = [...tiles_clicked, tile_nb]
         } else {
             console.log("Already clicked ", tile_nb);
         }
     } catch (error) {
-        console.log("Mouse click error on tile : "+tile_nb+" \n err : " + error);
+        console.log("Mouse click error on tile : " + tile_nb + " \n err : " + error);
     }
 }
 
-function add_flags(page, board, hidden_tiles){
+
+
+function add_flags(page, board, hidden_tiles) {
     // console.log("click on tilenb: ",tile_nb);
-    hidden_tiles.forEach(tile_coord => { 
+    hidden_tiles.forEach(tile_coord => {
         let tile_nb = tile_coord[0] * 9 + tile_coord[1]
-        // let tile = get_tile_type(await page.$('#tile'+tile_nb))
+            // let tile = get_tile_type(await page.$('#tile'+tile_nb))
         try {
             if (board[tile_coord[0]][tile_coord[1]] == "O") {
                 // console.log("Try RIGHT click on tile "+tile_nb);
-                page.click('#tile' + tile_nb,{ button: 'right', delay: 100 });
+                page.click('#tile' + tile_nb, { button: 'right', delay: 100 });
                 console.log("RIGHT Clicked on tile " + tile_nb);
             }
         } catch (error) {
-            console.log("Mouse click error on tile : "+tile_nb+" \n err : " + error);
+            console.log("Mouse click error on tile : " + tile_nb + " \n err : " + error);
         }
     });
 }
 
 
+/**
+ * Given a coordinate, find all the hidden cells around it and return them
+ * @returns -1 if the number of flags is equal to the number of hidden cells.
+ */
 function find_hidden(myBoard, coord, type, page) {
     let newCoord = []
     let hidden = []
-    // console.log(coord);
+        // console.log(coord);
     let coord_X = coord[0]
     let coord_Y = coord[1]
     let new_X, new_Y
@@ -383,12 +406,12 @@ function find_hidden(myBoard, coord, type, page) {
 
     for (let x = -1; x < 2; x++) {
         for (let y = -1; y < 2; y++) {
-    
+
             new_X = coord_X + x
             new_Y = coord_Y + y
-            // console.log(coord_X, coord_Y, new_X, coord_Y);
-            if (!(new_X < 0 || new_Y < 0 || new_X > 8 || new_Y > 8 || myBoard[new_X][new_Y] === undefined)) {   
-                 
+                // console.log(coord_X, coord_Y, new_X, coord_Y);
+            if (!(new_X < 0 || new_Y < 0 || new_X > 8 || new_Y > 8 || myBoard[new_X][new_Y] === undefined)) {
+
                 // console.log("x: ", x, "  y: ", y, " old coord: ", coord_X,coord_Y, "  boardV: ", myBoard[coord_X][coord_Y]);
                 // console.log("x: ", x, "  y: ", y, " new coord: ", new_X,new_Y, "  boardV: ", myBoard[new_X][new_Y]);
                 try {
@@ -412,12 +435,12 @@ function find_hidden(myBoard, coord, type, page) {
                 click_on(page, coord)
                 return -1
             }
-        }   
+        }
     }
     // console.log("nb hidden : ",nb_hidden);
     if (nb_hidden == type && nb_flags != type) {
         add_flags(page, myBoard, hidden)
-        
+
         return -1
     }
     return newCoord;
