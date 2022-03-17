@@ -61,12 +61,24 @@ const ONE = 0,
         console.log("left : ", click[0]);
         console.log("right : ", click[1]);
 
+        let left_clicks = click[0]
         let richt_clicks = click[1]
 
+        /* The above code is clicking on the tiles in the richt_clicks array. */
         for (let i = 0; i < richt_clicks.length; i++) {
             try {
                 let tileNb = richt_clicks[i][0] * 9 + richt_clicks[i][1]
                 await page.click('#tile' + tileNb, { button: 'right', delay: 100 })
+            } catch (error) {
+                console.log("Error on mouse click");
+            }
+        }
+
+        /* The above code is clicking on the tiles in the richt_clicks array. */
+        for (let i = 0; i < left_clicks.length; i++) {
+            try {
+                let tileNb = left_clicks[i][0] * 9 + left_clicks[i][1]
+                await page.click('#tile' + tileNb, { button: 'left', delay: 100 })
             } catch (error) {
                 console.log("Error on mouse click");
             }
@@ -257,25 +269,25 @@ function array_contains(array, values) {
         values.forEach(val => {
             array.forEach(element => {
                 // element.every(el => {
-                console.log("el: ", element, " val: ", val);
+                // console.log("el: ", element, " val: ", val);
                 if (element[0] != undefined) {
                     if (!(element[0] == val[0] && element[1] == val[1])) {
 
-                        console.log("add ", val);
+                        // console.log("add ", val);
                         add = true
 
                     } else {
                         duplicate = true
                     }
                 } else {
-                    console.log("element undefined : ", val);
+                    // console.log("element undefined : ", val);
                     array = [val]
                 }
             });
             if (add && !duplicate) {
-                console.log("addReal : ", val);
+                // console.log("addReal : ", val);
                 array = [...array, val]
-                console.log("added : ", array);
+                    // console.log("added : ", array);
 
                 duplicate = false
 
@@ -284,7 +296,7 @@ function array_contains(array, values) {
         });
 
     } else {
-        console.log("Array empty values :", values);
+        // console.log("Array empty values :", values);
 
         array = [...values]
     }
@@ -330,7 +342,9 @@ function get_neighbors(tiles, tile_type, tile) {
             }
         }
     }
-    if (nb_hidden == tile_type) { // Check if the nb of hidden tiles is the same as the tile type (If yes it means that we can put a flag on all the hidden tiles)
+    if (nb_flags == tile_type) {
+        right_clicks = []
+    } else if (nb_hidden == tile_type) { // Check if the nb of hidden tiles is the same as the tile type (If yes it means that we can put a flag on all the hidden tiles)
         right_clicks = [...hidden]
             // console.log("-----------------------------------");
             // console.log(right_clicks);
