@@ -97,7 +97,6 @@ const ONE = 0,
         sleep(1000)
     }
 
-
     // sleep(700)
     // //On cree un objet Date
     // var d = new Date
@@ -338,7 +337,7 @@ function get_neighbors(tiles, tile_type, tile) {
                     hidden = [...hidden, [newX, newY]]
                 }
             } catch (error) {
-                console.log("Out of range");
+                // console.log("Out of range");
             }
         }
     }
@@ -351,6 +350,11 @@ function get_neighbors(tiles, tile_type, tile) {
             // console.log("-----------------------------------");
             // left_click = [tile] // Add the current tile to the left clicks beacause if we add flags to all the hidden tiles so we can click on it 
     }
+
+    // if (nb_flags + nb_hidden == tile_type) {
+
+    // }
+
     // console.log(left_click, right_clicks);
     return [left_click, right_clicks]
 }
