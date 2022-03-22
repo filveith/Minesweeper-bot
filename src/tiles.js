@@ -159,3 +159,67 @@ export function get_neighbors(tiles, tile_type, tile) {
 
     return [left_click, right_clicks]
 }
+
+/**
+ * Given a board, it returns a list of lists of coordinates
+ * @returns an array of arrays. Each array contains the coordinates of the tiles of the corresponding
+ * type.
+ */
+ export function get_tiles(myBoard) {
+    let coord = [0, 0]
+
+    let one = [],
+        two = [],
+        three = [],
+        four = [],
+        five = [],
+        six = [],
+        seven = [],
+        height = [],
+        flags = [],
+        hidden = []
+
+    for (let nb_row in myBoard) {
+        let i = 0
+        for (let field of myBoard[parseInt(nb_row)]) {
+            coord = [parseInt(nb_row), i]
+
+            switch (field) {
+                case "1":
+                    one = [...one, coord]
+                    break;
+                case "2":
+                    two = [...two, coord]
+                    break;
+                case "3":
+                    three = [...three, coord]
+                    break;
+                case "4":
+                    four = [...four, coord]
+                    break;
+                case "5":
+                    five = [...five, coord]
+                    break;
+                case "6":
+                    six = [...six, coord]
+                    break;
+                case "7":
+                    seven = [...seven, coord]
+                    break;
+                case "8":
+                    height = [...height, coord]
+                    break;
+                case "F":
+                    flags = [...flags, coord]
+                    break;
+                case "O":
+                    hidden = [...hidden, coord]
+                    break;
+                default:
+                    break;
+            }
+            i++
+        }
+    }
+    return [one, two, three, four, five, six, seven, height, flags, hidden]
+}
