@@ -8,7 +8,7 @@
         "**/Thumbs.db": true,
         "**/node_modules": true
     },
-    "docwriter.style": "Auto-detect",
+    "docwriter.style": "JSDoc",
     "docwriter.progress.trackClasses": true,
     "docwriter.progress.trackTypes": true,
     "docwriter.progress.trackFunctions": true,
