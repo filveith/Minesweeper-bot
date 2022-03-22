@@ -28,7 +28,7 @@ let boardSize = [9, 9];
     sleep(1000)
 
     await page.click("#qc-cmp2-ui > div.qc-cmp2-footer.qc-cmp2-footer-overlay.qc-cmp2-footer-scrolled > div > button.css-k8o10q")
-    sleep(2000)
+    sleep(7000)
         // await page.click('#tile32')
 
     let myBoard = []
@@ -42,7 +42,7 @@ let boardSize = [9, 9];
     let rowNb = 0
     let row = []
     boardSize = await get_board_type(page)
-
+    console.log(`Ready to play on a ${boardSize} board`);
     while (true) {
         // Get the urls of all the images
         for (const el of board) {
@@ -102,7 +102,7 @@ let boardSize = [9, 9];
             console.log(JSON.stringify(row));
         });
 
-        // console.log("----------------------------------------------------");
+        console.log("----------------------------------------------------");
         myBoard = []
         i = 0
         row = []
@@ -159,6 +159,10 @@ function get_tile_type(url) {
             return "5"
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0Ae3t7e3tXnVpnAAAAKklEQVQI12NYBQQMDQxAACFCQxkYGsFEAAOMgIo5ALmsEALMBSmGaEMQAOO9EHd34ZsRAAAAAElFTkSuQmCC":
             return "6"
+        case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEW9vb0AAAB7e3tloawkAAAAKUlEQVQI12NYBQQMDQxAACYaQ0MdwASQywonRBlgRAiMYAwAExBtCAIAoJQN/Vp/RC0AAAAASUVORK5CYII=":
+            return "7"
+        case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEW9vb17e3tXxGy+AAAAJklEQVQI12P4/5+hgQGE+j8wzP/BMMcCiIBsIIKwgYJANlABBAEAuf8Q+fimVN8AAAAASUVORK5CYII=":
+            return "8"
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAWlBMVEW9vb17e3v///8AAAAyMjIeHh4GBgaysrKWlpaMjIwZGRm6urq3t7erq6ujo6Obm5t+fn5xcXFra2teXl5OTk5CQkI8PDwRERELCwu0tLSQkJCPj48lJSUkJCTnYh1HAAAAiUlEQVQoz7XRyxKCMBBE0R4D4aGCovj2/3/TLiKOxpmd3mxSOVW9CcQLkIUdBOLJRDCSn1DTO7Tchbg1aV0ENp6/qTmGqbLPiGNzHFVKY9pYKaUxra1fVKaX02aI6VZkdOuAurVovwKrDjlxDM+G+En3DnMcfSeOaRxVuiDrCvnPV0LswOORK/IAq5MFjXfo9T0AAAAASUVORK5CYII=":
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAVFBMVEW9vb17e3sAAAAyMjIfHx8ZGRkGBgaysrKWlpaMjIy6urq3t7erq6ujo6Obm5uQkJB+fn5xcXFra2teXl5CQkI8PDwkJCQRERELCwu0tLRPT09NTU3ziK3aAAAAeklEQVQoz8XRxw6AIBBF0RFFsff+///pKMgQylZvWBBO8jZAFAqIXMPj70fKmwAVI0t7L1Uxw6bdpXxlT7whesdUOEqkxqgpI5JjFBeaEvmydUMqb7FFSw0guI+OErBstgnHQIWjJt1jOsFNOkuSe5SoBav2619GC3QBU+cEJodccrEAAAAASUVORK5CYII=":
             return [9, 9]
