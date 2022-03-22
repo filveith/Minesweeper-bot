@@ -1,19 +1,10 @@
 import puppeteer from 'puppeteer';
 
-import { get_tile_type } from './tiles.js';
+import { get_tile_type, check_tiles } from './tiles.js';
 
 let tiles_clicked = [];
 
-const ONE = 0,
-    TWO = 1,
-    THREE = 2,
-    FOUR = 3,
-    FIVE = 4,
-    SIX = 5,
-    SEVEN = 6,
-    EIGHT = 7,
-    FLAGS = 8,
-    HIDDEN = 9;
+
 
 let boardSize = [9, 9];
 let boardSize_old = [0, 0];
@@ -41,7 +32,6 @@ let boardSize_old = [0, 0];
     ]
 
     let i = 0
-    let rowNb = 0
     let row = []
     let board
     boardSize = await get_board_type(page)
@@ -71,7 +61,7 @@ let boardSize_old = [0, 0];
 
         let tiles = get_tiles(myBoard)
 
-        click = check_tiles(myBoard, tiles)
+        click = check_tiles(myBoard, tiles, boardSize)
             // console.log("left : ", click[0]);
             // console.log("right : ", click[1]);
 
@@ -276,133 +266,133 @@ function get_tiles(myBoard) {
     return [one, two, three, four, five, six, seven, height, flags, hidden]
 }
 
-/**
- * Given a board and a list of tiles, return a list of the tiles that are neighbors of the tiles in the
- * list
- * @param board - the board object
- * @param tiles - an array of tiles
- * @returns an array of two arrays. The first array contains the left clicks and the second array
- * contains the right clicks.
- */
-function check_tiles(board, tiles) {
-    let clicks = []
-    let left_click = [],
-        right_clicks = []
+// /**
+//  * Given a board and a list of tiles, return a list of the tiles that are neighbors of the tiles in the
+//  * list
+//  * @param board - the board object
+//  * @param tiles - an array of tiles
+//  * @returns an array of two arrays. The first array contains the left clicks and the second array
+//  * contains the right clicks.
+//  */
+// function check_tiles(board, tiles) {
+//     let clicks = []
+//     let left_click = [],
+//         right_clicks = []
 
-    tiles.forEach((tile_cat, i) => {
-        i++
-        if (i <= 8) {
-            tile_cat.forEach(tile => {
-                // The type is the tile value [1...8]
-                let tile_type = i
-                    // Tile number in the page [1,2] = tile nb 11
-                let tile_number = tile[0] * boardSize[0] + tile[1]
+//     tiles.forEach((tile_cat, i) => {
+//         i++
+//         if (i <= 8) {
+//             tile_cat.forEach(tile => {
+//                 // The type is the tile value [1...8]
+//                 let tile_type = i
+//                     // Tile number in the page [1,2] = tile nb 11
+//                 let tile_number = tile[0] * boardSize[0] + tile[1]
 
-                clicks = get_neighbors(tiles, i, tile)
+//                 clicks = get_neighbors(tiles, i, tile)
 
-                left_click = array_contains(left_click, clicks[0])
-                right_clicks = array_contains(right_clicks, clicks[1])
+//                 left_click = array_contains(left_click, clicks[0])
+//                 right_clicks = array_contains(right_clicks, clicks[1])
 
-            });
-        }
-    });
+//             });
+//         }
+//     });
 
-    // Click[0] are the left click and clicks[1] the right clicks
-    return [left_click, right_clicks]
-}
+//     // Click[0] are the left click and clicks[1] the right clicks
+//     return [left_click, right_clicks]
+// }
 
 
-/**
- * Given an array of arrays, return a new array of arrays that contains all the values from the
- * original array, 
- * but with no duplicates
- * 
- * @param {array} array 
- * @param {array} values 
- * @returns An array of arrays.
- */
-function array_contains(array, values) {
-    let add = false
-    let duplicate = false
-    if (array.length !== 0) {
-        values.forEach(val => {
-            array.forEach(element => {
-                if (element[0] != undefined) {
-                    if (!(element[0] == val[0] && element[1] == val[1])) {
-                        add = true
-                    } else {
-                        duplicate = true
-                    }
-                } else {
-                    array = [val]
-                }
-            });
-            if (add && !duplicate) {
-                array = [...array, val]
-                duplicate = false
-                add = false
-            }
-        });
+// /**
+//  * Given an array of arrays, return a new array of arrays that contains all the values from the
+//  * original array, 
+//  * but with no duplicates
+//  * 
+//  * @param {array} array 
+//  * @param {array} values 
+//  * @returns An array of arrays.
+//  */
+// function array_contains(array, values) {
+//     let add = false
+//     let duplicate = false
+//     if (array.length !== 0) {
+//         values.forEach(val => {
+//             array.forEach(element => {
+//                 if (element[0] != undefined) {
+//                     if (!(element[0] == val[0] && element[1] == val[1])) {
+//                         add = true
+//                     } else {
+//                         duplicate = true
+//                     }
+//                 } else {
+//                     array = [val]
+//                 }
+//             });
+//             if (add && !duplicate) {
+//                 array = [...array, val]
+//                 duplicate = false
+//                 add = false
+//             }
+//         });
 
-    } else {
-        array = [...values]
-    }
-    return array
-}
+//     } else {
+//         array = [...values]
+//     }
+//     return array
+// }
 
-/**
- * Given a tile, return the tiles that can be clicked on and the tiles that can be flagged
- * @param tiles - the tiles object
- * @param tile_type - The number of mines around the tile
- * @param tile - the current tile that the user has clicked on
- * @returns an array containing two arrays. The first array contains the tiles that can be left clicked
- * and the second array contains the tiles that can be right clicked.
- */
-function get_neighbors(tiles, tile_type, tile) {
-    // Only one left click possible per case but mutliple right clicks
-    let left_click = [],
-        right_clicks = [];
-    let X = tile[0],
-        Y = tile[1];
-    let newX, newY
-    let nb_flags = 0
-    let nb_hidden = 0
-    let hidden = []
-    let nbClick = 0
+// /**
+//  * Given a tile, return the tiles that can be clicked on and the tiles that can be flagged
+//  * @param tiles - the tiles object
+//  * @param tile_type - The number of mines around the tile
+//  * @param tile - the current tile that the user has clicked on
+//  * @returns an array containing two arrays. The first array contains the tiles that can be left clicked
+//  * and the second array contains the tiles that can be right clicked.
+//  */
+// function get_neighbors(tiles, tile_type, tile) {
+//     // Only one left click possible per case but mutliple right clicks
+//     let left_click = [],
+//         right_clicks = [];
+//     let X = tile[0],
+//         Y = tile[1];
+//     let newX, newY
+//     let nb_flags = 0
+//     let nb_hidden = 0
+//     let hidden = []
+//     let nbClick = 0
 
-    for (let x = -1; x < 2; x++) {
-        for (let y = -1; y < 2; y++) {
-            newX = x + X
-            newY = y + Y
-            try {
+//     for (let x = -1; x < 2; x++) {
+//         for (let y = -1; y < 2; y++) {
+//             newX = x + X
+//             newY = y + Y
+//             try {
 
-                if (tiles[FLAGS].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check if a neighbor is a flag
-                    nbClick++
-                    nb_flags++
-                    if (nb_flags == tile_type && left_click != undefined) {
-                        left_click = [tile]
-                    }
-                } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check the number of hidden tiles
-                    nbClick++
-                    nb_hidden++
-                    hidden = [...hidden, [newX, newY]]
-                }
-            } catch (error) {}
-        }
-    }
+//                 if (tiles[FLAGS].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check if a neighbor is a flag
+//                     nbClick++
+//                     nb_flags++
+//                     if (nb_flags == tile_type && left_click != undefined) {
+//                         left_click = [tile]
+//                     }
+//                 } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check the number of hidden tiles
+//                     nbClick++
+//                     nb_hidden++
+//                     hidden = [...hidden, [newX, newY]]
+//                 }
+//             } catch (error) {}
+//         }
+//     }
 
-    // If the number of flags is equal to the tile type and if there are no hidden tiles then do nothing (means that there are no more actions possible there)
-    if (nb_flags == tile_type) {
-        if (nb_hidden == 0) {
-            left_click = []
-        }
-        right_clicks = []
-    } else if (nb_flags + nb_hidden === tile_type) {
-        right_clicks = [...hidden]
-    }
+//     // If the number of flags is equal to the tile type and if there are no hidden tiles then do nothing (means that there are no more actions possible there)
+//     if (nb_flags == tile_type) {
+//         if (nb_hidden == 0) {
+//             left_click = []
+//         }
+//         right_clicks = []
+//     } else if (nb_flags + nb_hidden === tile_type) {
+//         right_clicks = [...hidden]
+//     }
 
-    return [left_click, right_clicks]
-}
+//     return [left_click, right_clicks]
+// }
 
 /**
  * Ajoute une methode sleep a JS 

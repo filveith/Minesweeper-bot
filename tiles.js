@@ -1,3 +1,16 @@
+import { array_contains } from './utils.js'
+
+const ONE = 0,
+    TWO = 1,
+    THREE = 2,
+    FOUR = 3,
+    FIVE = 4,
+    SIX = 5,
+    SEVEN = 6,
+    EIGHT = 7,
+    FLAGS = 8,
+    HIDDEN = 9;
+
 /**
  * Given a URL, return the tile type
  * @returns The tile type.
@@ -47,6 +60,7 @@ export function get_tile_type(url) {
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAeFBMVEW9vb17e3sAAAD///8dHR1JSUkxMTEODg4FBQWysrKvr6+YmJh3d3dTU1MsLCwiIiK4uLi2traqqqqioqKBgYFycnJkZGRZWVlYWFgmJiYYGBgVFRUSEhIKCgq5ubmkpKScnJyUlJSNjY2GhoZcXFxEREQ8PDw5OTkbfTg2AAAAqElEQVQoz3XNVxKDMAxF0WfFBlND76SX/e8wBFIsyvWHR3NmJIitALFbD4IRk5GwkjDpGEitpfKWlGuaquaU0a8bp6ilfydGGRkFjJRJNaO9STajnswY0Tb1Zfjdpgq+0LrCG+8pB75l0jg6gz2Gr8kZHWQJnIlSuFYXM8KFQpFI6RUd+eCEgD49MaconKRxFwS3fkubYkmIK1vfE3AyYwSxHoa3RUxYL8nOB//PC+1IAAAAAElFTkSuQmCC":
             return [100, 100]
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAilBMVEW9vb17e3v///8AAAC6urq3t7e0tLRqampEREQvLy8NDQ0FBQWysrJ/f39SUlJOTk4WFhYUFBSpqamioqKenp6bm5t2dnYqKioPDw+5ubmmpqaNjY2IiIiEhIRhYWFKSkpAQEA9PT02NjY0NDQoKCgjIyMdHR0JCQmrq6uWlpZlZWVZWVlISEgcHBxT10T8AAAA50lEQVQoz43SV47DMAwE0NGO3HtZ2+k92+9/vSX9IdhIDGT0RTwQICjCLAUwb88DA7MkI+FJzIuUHuNzA9gH8nY9WUVri/VhPyPvUJLf2uNXt3RGXyK5CnbcABtHqyAir0kgAsOh3Q6OQpI/H2QAvMfkkOSOsoRXbBNyr9IfA+vImiSDzUhK69mbD1/rBB0lF5EZqaCNhYqxmpBKU5FqVitHFn4XiES52O8KjlRupEiKgmQ47UJXthHLFLCh2MmbUNbA7//GPZ/E8glB91CM83gX3j9nVN9DXwXww/qFX8bStclbokUx/82BC2Sx6WA7AAAAAElFTkSuQmCC":
+        case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAAhFBMVEW9vb17e3sAAAC7u7u3t7cODg4VFRW0tLRDQ0MvLy8HBwepqamysrKhoaGbm5uAgIB2dnZra2tTU1NNTU09PT0qKionJycfHx+kpKSdnZ2NjY2IiIiEhIRnZ2dQUFBKSkpGRkY2NjY0NDQaGhqwsLCmpqaWlpZ/f39sbGxjY2NhYWFZWVku3hMgAAAA50lEQVQoz7XS2WoDMQwF0JvrZdZ09ky2Zu3e//+/SqGIKTR5CERgkDmWsIwxuxYQumrK/8bjyDmUaTjOJbvsjCT324GM2avDcv/lrEplH8lnJzVJXLxgQng7kztNsOUaWBv5JiMX/Lg0YlhtglFK8juXjsBTIEPeGlVSg43Yp8rQN87IzfIK7p2k8NHjzzUKvUFNiZPIhFRlzYPQTjP3SyaRGp1OZ6ST1o1I1oodPIxURlKkdB3JdFqFOq4yxlJ66Yy9n1C1RDKc9bTvxdrpy+s7dJrBnzgWRirFmCYqQHIo7v4Atz7iDyASCU+qKT6QAAAAAElFTkSuQmCC":    
             return [30, 16]
         case "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEW9vb0AAAD/AAB7e3v///9UaJa4AAAAS0lEQVQI11WNwQnAMAwDRSawPIEjOkCg++9Wq4SG6nX4sIR7Bws7hnhBhlFYo8iQlcgsQ15UGKichhYtoy+Gn8KYFM67CxHQmfjWH/GqCYCzIeZyAAAAAElFTkSuQmCC":
             return "N"
@@ -55,4 +69,93 @@ export function get_tile_type(url) {
             console.log(url);
             break;
     }
+}
+
+/**
+ * Given a board and a list of tiles, return a list of the tiles that are neighbors of the tiles in the
+ * list
+ * @param board - the board object
+ * @param tiles - an array of tiles
+ * @returns an array of two arrays. The first array contains the left clicks and the second array
+ * contains the right clicks.
+ */
+export function check_tiles(board, tiles, board_size) {
+    let clicks = []
+    let left_click = [],
+        right_clicks = []
+
+    tiles.forEach((tile_cat, i) => {
+        i++
+        if (i <= 8) {
+            tile_cat.forEach(tile => {
+                // The type is the tile value [1...8]
+                let tile_type = i
+                    // Tile number in the page [1,2] = tile nb 11
+                let tile_number = tile[0] * board_size[0] + tile[1]
+
+                clicks = get_neighbors(tiles, i, tile)
+
+                left_click = array_contains(left_click, clicks[0])
+                right_clicks = array_contains(right_clicks, clicks[1])
+
+            });
+        }
+    });
+
+    // Click[0] are the left click and clicks[1] the right clicks
+    return [left_click, right_clicks]
+}
+
+/**
+ * Given a tile, return the tiles that can be clicked on and the tiles that can be flagged
+ * @param tiles - the tiles object
+ * @param tile_type - The number of mines around the tile
+ * @param tile - the current tile that the user has clicked on
+ * @returns an array containing two arrays. The first array contains the tiles that can be left clicked
+ * and the second array contains the tiles that can be right clicked.
+ */
+export function get_neighbors(tiles, tile_type, tile) {
+    // Only one left click possible per case but mutliple right clicks
+    let left_click = [],
+        right_clicks = [];
+    let X = tile[0],
+        Y = tile[1];
+    let newX, newY
+    let nb_flags = 0
+    let nb_hidden = 0
+    let hidden = []
+    let nbClick = 0
+
+    for (let x = -1; x < 2; x++) {
+        for (let y = -1; y < 2; y++) {
+            newX = x + X
+            newY = y + Y
+            try {
+
+                if (tiles[FLAGS].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check if a neighbor is a flag
+                    nbClick++
+                    nb_flags++
+                    if (nb_flags == tile_type && left_click != undefined) {
+                        left_click = [tile]
+                    }
+                } else if (tiles[HIDDEN].find(flag => flag[0] == newX && flag[1] == newY) != undefined) { // Check the number of hidden tiles
+                    nbClick++
+                    nb_hidden++
+                    hidden = [...hidden, [newX, newY]]
+                }
+            } catch (error) {}
+        }
+    }
+
+    // If the number of flags is equal to the tile type and if there are no hidden tiles then do nothing (means that there are no more actions possible there)
+    if (nb_flags == tile_type) {
+        if (nb_hidden == 0) {
+            left_click = []
+        }
+        right_clicks = []
+    } else if (nb_flags + nb_hidden === tile_type) {
+        right_clicks = [...hidden]
+    }
+
+    return [left_click, right_clicks]
 }
