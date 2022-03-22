@@ -33,12 +33,13 @@ let boardSize_old = [0, 0];
     let row = []
     let board
     boardSize = await get_difficulty(page)
-    console.log(`Ready to play on a ${boardSize} board`);
+    // console.log(`Ready to play on a ${boardSize} board`);
     while (true) {
 
         boardSize = await get_difficulty(page)
 
-        if (boardSize != boardSize_old) {
+        if (boardSize[0] != boardSize_old[0]) {
+            console.log(`Ready to play on a ${boardSize} board`);
             board = await page.$$('#board img')
         }
         // Get the urls of all the images
@@ -69,14 +70,13 @@ let boardSize_old = [0, 0];
         }
         if (right_clicks != []) {
             await mouse_click(page, right_clicks, 'right', boardSize)
-
         }
 
-        myBoard.forEach(row => {
-            console.log(JSON.stringify(row));
-        });
+        // myBoard.forEach(row => {
+        //     console.log(JSON.stringify(row));
+        // });
 
-        console.log("----------------------------------------------------");
+        // console.log("----------------------------------------------------");
         myBoard = []
         i = 0
         row = []

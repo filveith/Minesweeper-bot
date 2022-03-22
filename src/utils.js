@@ -49,8 +49,10 @@ export async function get_difficulty(page) {
     return get_tile_type(url)
 }
 
+/**
+ * It clicks on the tiles in the board from the values in an array
+ */
 export async function mouse_click(page, clicks, mouse_button, boardSize) {
-    /* The above code is clicking on the tiles in the left_clicks array. */
     for (let i = 0; i < clicks.length; i++) {
         try {
             let tileNb = clicks[i][0] * boardSize[0] + clicks[i][1]
