@@ -41,6 +41,8 @@ let boardSize_old = [0, 0];
         if (boardSize[0] != boardSize_old[0]) {
             console.log(`Ready to play on a ${boardSize} board`);
             board = await page.$$('#board img')
+            click = [[],[]]
+            myBoard = []
         }
         // Get the urls of all the images
         for (const el of board) {
