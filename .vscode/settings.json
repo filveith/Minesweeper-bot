@@ -1,16 +1,3 @@
 {
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "**/Thumbs.db": true,
-        "**/node_modules": true
-    },
-    "docwriter.style": "JSDoc",
-    "docwriter.progress.trackClasses": true,
-    "docwriter.progress.trackTypes": true,
-    "docwriter.progress.trackFunctions": true,
-    "docwriter.progress.trackMethods": true
+    "docwriter.style": "JSDoc"
 }

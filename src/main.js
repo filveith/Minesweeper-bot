@@ -4,7 +4,6 @@ import { game_over } from './state.js';
 import { get_tile_type, check_tiles, get_tiles } from './tiles.js';
 import { sleep, mouse_click, get_difficulty } from './utils.js';
 
-
 let boardSize = [9, 9];
 let boardSize_old = [0, 0];
 
