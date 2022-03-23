@@ -31,6 +31,6 @@ If you have an error telling you that Chromium is not found / installed, go to t
 # 9 x 9 in 0s
 ![9x9](./img/9x9.gif)
 
----
+--- 
 # 16 x 16 in 5s
 ![16x16](./img/16x16.gif)
