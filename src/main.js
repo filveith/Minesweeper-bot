@@ -33,7 +33,6 @@ let boardSize_old = [0, 0];
     let row = []
     let board
     boardSize = await get_difficulty(page)
-    // console.log(`Ready to play on a ${boardSize} board`);
     while (true) {
 
         boardSize = await get_difficulty(page)
@@ -46,10 +45,9 @@ let boardSize_old = [0, 0];
         }
         // Get the urls of all the images
         for (const el of board) {
-            let url = await page.evaluate(li => li.getAttribute('src'), el) //get the url for the full res img (url stored in the attribute 'data-old-hires') 
-
+            let url = await page.evaluate(li => li.getAttribute('src'), el)
             row[i] = get_tile_type(url)
-
+            
             i++
             if (i === boardSize[0]) {
                 myBoard = [...myBoard, row];
@@ -83,8 +81,4 @@ let boardSize_old = [0, 0];
         i = 0
         row = []
     }
-
-    // var d = new Date
-    // await page.screenshot({path: d.getMinutes()+".png"})
-    // browser.close();
 })()
