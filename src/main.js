@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import { game_over } from './state.js';
 
 import { get_tile_type, check_tiles, get_tiles } from './tiles.js';
 import { sleep, mouse_click, get_difficulty } from './utils.js';
@@ -14,7 +15,7 @@ let boardSize_old = [0, 0];
     })
     const page = await browser.newPage(); //open the browser
 
-    await page.setViewport({ width: 1920, height: 720 });
+    await page.setViewport({ width: 1920, height: 1080 });
 
     await page.goto('https://demineur.eu/');
     sleep(1000)
@@ -33,52 +34,59 @@ let boardSize_old = [0, 0];
     let row = []
     let board
     boardSize = await get_difficulty(page)
+    let game_finished = false
     while (true) {
 
         boardSize = await get_difficulty(page)
 
-        if (boardSize[0] != boardSize_old[0]) {
-            console.log(`Ready to play on a ${boardSize} board`);
-            board = await page.$$('#board img')
-            click = [[],[]]
-            myBoard = []
-        }
-        // Get the urls of all the images
-        for (const el of board) {
-            let url = await page.evaluate(li => li.getAttribute('src'), el)
-            row[i] = get_tile_type(url)
-            
-            i++
-            if (i === boardSize[0]) {
-                myBoard = [...myBoard, row];
-                i = 0
-                row = []
+        if ((click[0].length != 0 || click[1].length != 0) || !game_finished) {  
+
+            if (boardSize[0] != boardSize_old[0]) {
+                console.log(`Ready to play on a ${boardSize} board`);
+                board = await page.$$('#board img')
+                click = [[],[]]
+                myBoard = []
             }
+            // Get the urls of all the images
+            for (const el of board) {
+                let url = await page.evaluate(li => li.getAttribute('src'), el)
+                row[i] = get_tile_type(url)
+                
+                i++
+                if (i === boardSize[0]) {
+                    myBoard = [...myBoard, row];
+                    i = 0
+                    row = []
+                }
+            }
+
+            boardSize_old = boardSize
+
+            let tiles = get_tiles(myBoard)
+
+            click = check_tiles(myBoard, tiles, boardSize)
+
+            let left_clicks = click[0]
+            let right_clicks = click[1]
+
+            if (left_clicks != []) {
+                await mouse_click(page, left_clicks, 'left', boardSize)
+            }
+            if (right_clicks != []) {
+                await mouse_click(page, right_clicks, 'right', boardSize)
+            }
+
+            // myBoard.forEach(row => {
+            //     console.log(JSON.stringify(row));
+            // });
+
+            // console.log("----------------------------------------------------");
+            myBoard = []
+            i = 0
+            row = []    
         }
 
-        boardSize_old = boardSize
-
-        let tiles = get_tiles(myBoard)
-
-        click = check_tiles(myBoard, tiles, boardSize)
-
-        let left_clicks = click[0]
-        let right_clicks = click[1]
-
-        if (left_clicks != []) {
-            await mouse_click(page, left_clicks, 'left', boardSize)
-        }
-        if (right_clicks != []) {
-            await mouse_click(page, right_clicks, 'right', boardSize)
-        }
-
-        // myBoard.forEach(row => {
-        //     console.log(JSON.stringify(row));
-        // });
-
-        // console.log("----------------------------------------------------");
-        myBoard = []
-        i = 0
-        row = []
+        game_finished = await game_over(page)
+        
     }
 })()
