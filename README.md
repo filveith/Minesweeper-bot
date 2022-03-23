@@ -28,6 +28,14 @@ This bot will play any level of minesweeper in a record breaking time for you !
 If you have an error telling you that Chromium is not found / installed, go to the [chromium website](https://www.chromium.org/getting-involved/download-chromium/) and install it.
 
 ---
+# More
+The bot is run on [demineur.eu](https://xn--dmineur-bya.eu/)
+I used **puppeteer** to scrap and interact with the website
+
+Sometimes the bot is stuck and you can just play instead of him once and he should be able to finish the game
+I am currently working on a version that wins all every game and never get's stuck
+
+---
 # 9 x 9 in 0s
 ![9x9](./img/9x9.gif)
 
