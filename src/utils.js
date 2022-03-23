@@ -1,5 +1,29 @@
 import { get_tile_type } from "./tiles.js";
-  
+
+const VAL_0 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAXAgMAAACtyC0SAAAACVBMVEUAAAD/AAB7AAA/A8W9AAAAOElEQVQI12MAA9bQEAYGwdBABgaRUFcGBlEgxEqIMLAyMAh0NDIwMCkpgFlgMXw6Ql3BJkPsAAMA5/QIc/EHJvEAAAAASUVORK5CYII=";
+const LOST = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaBAMAAABbZFH9AAAAD1BMVEW9vb17e3v//wD///8AAABXk1meAAAAaUlEQVQY043PwQnAMAgFUAMZIJINxAECXSCI+89UE2wVmkM/Xh6R4AdMadCvSMkaCH3Ak3JUVQ1VIdJXQpbpqrTCLmEmm+kiWxVXtYc9rp1/YlVX/OniteeKW753Rofod+xeMAINs0rWDW08IHwPjv9jAAAAAElFTkSuQmCC"
+
+/**
+ * Given a page, check if the game is over
+ * @returns A boolean value.
+ */
+export async function game_over(page){
+    let game_over = true
+
+    for (let nb of [0,1,2] ){
+        let val = await page.evaluate(li => li.getAttribute('src'), await page.$("#dd"+nb))
+        if (val != VAL_0) {
+            game_over = false
+        }
+    }
+
+    if (await page.evaluate(li => li.getAttribute('src'), await page.$("#face")) === LOST) {
+        game_over = true
+    }
+    
+    return game_over
+};
+
 /**
  * Given an array of arrays, return a new array of arrays that contains all the values from the
  * original array, 
